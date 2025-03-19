@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { jsPDF } from 'jspdf';
 
 function OrderSummary() {
   const { orderId } = useParams(); // Get the orderId from the URL
@@ -77,6 +78,64 @@ function OrderSummary() {
 
   // Calculate grand total (totalPrice + CGST + SGST)
   const grandTotal = totalPrice + cgst + sgst;
+
+  // Function to generate and download the PDF
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    const marginLeft = 20;
+    const marginTop = 20;
+    const lineHeight = 10;
+
+    // Title and Company Info
+    doc.setFontSize(16);
+    doc.text('Rocket Computers', marginLeft, marginTop);
+    doc.setFontSize(12);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, marginLeft, marginTop + lineHeight);
+    doc.text(`Customer Name: ${customerName}`, marginLeft, marginTop + (lineHeight * 2));
+    doc.text(`Customer ID: ${customerId}`, marginLeft, marginTop + (lineHeight * 3));
+    doc.text('Company Address: 123 Tech Park, Silicon Valley, CA', marginLeft, marginTop + (lineHeight * 4));
+    doc.text('Company GST Number: GST123456789', marginLeft, marginTop + (lineHeight * 5));
+
+    // Products Table Header
+    let y = marginTop + (lineHeight * 7);
+    doc.setFontSize(10);
+    doc.text('Product Name', marginLeft, y);
+    doc.text('Price', marginLeft + 80, y);
+    doc.text('Quantity', marginLeft + 120, y);
+    doc.text('Total', marginLeft + 160, y);
+    y += lineHeight;
+
+    // Products Table Body
+    safeProducts.forEach((product) => {
+      doc.text(product.productName, marginLeft, y);
+      doc.text(product.price.toFixed(2), marginLeft + 80, y);
+      doc.text(product.quantity.toString(), marginLeft + 120, y);
+      doc.text((product.price * product.quantity).toFixed(2), marginLeft + 160, y);
+      y += lineHeight;
+    });
+
+    // Summary Table
+    y += lineHeight * 2; // Adding some space between products and summary
+    doc.text('Summary:', marginLeft, y);
+    y += lineHeight;
+    doc.text(`Total Price: ${totalPrice.toFixed(2)}`, marginLeft, y);
+    y += lineHeight;
+    doc.text(`CGST (9%): ${cgst.toFixed(2)}`, marginLeft, y);
+    y += lineHeight;
+    doc.text(`SGST (9%): ${sgst.toFixed(2)}`, marginLeft, y);
+    y += lineHeight;
+    doc.text(`Grand Total: ${grandTotal.toFixed(2)}`, marginLeft, y);
+
+    // Payment Status
+    y += lineHeight * 2;
+    doc.text(`Payment Status: ${paymentStatus}`, marginLeft, y);
+
+    // Order ID at the bottom-right
+    doc.text(`Order ID: ${orderData.orderId}`, marginLeft+100, y);
+
+    // Save the PDF
+    doc.save('order-summary.pdf');
+  };
 
   return (
     <div className="container my-4">
@@ -168,6 +227,13 @@ function OrderSummary() {
       {/* Order ID at the bottom-right */}
       <div className="text-right mt-4">
         <strong>Order ID:</strong> {orderData.orderId}
+      </div>
+
+      {/* Button to Download PDF */}
+      <div className="text-center mt-4">
+        <button className="btn btn-primary" onClick={downloadPDF}>
+          Download PDF
+        </button>
       </div>
     </div>
   );
