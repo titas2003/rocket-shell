@@ -134,7 +134,7 @@ function OrderSummary() {
     doc.text(`Order ID: ${orderData.orderId}`, marginLeft+100, y);
 
     // Save the PDF
-    doc.save('order-summary.pdf');
+    doc.save(`order-summary-${orderData.orderId}.pdf`);
   };
 
   return (
