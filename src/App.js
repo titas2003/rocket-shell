@@ -10,6 +10,7 @@ import AssociateLogin from './components/AssociateLogin';
 import HomePage from './components/HomePage'; // Import HomePage component
 import OrderForm from './components/OrderForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import OrderSummary from './components/OrderSummary';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -31,6 +32,7 @@ function App() {
           <Route path="/associate-register" element={<AssociateRegister />} />
           <Route path="/associate-login" element={<AssociateLogin />} />
           <Route path="/create-order" element={<OrderForm />} />
+          <Route path="/order-summary/:orderId" element={ <OrderSummary /> } />
         </Routes>
       </div>
     </Router>

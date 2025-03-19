@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
 function OrderForm() {
   const [categories, setCategories] = useState([]);
@@ -9,6 +10,7 @@ function OrderForm() {
   const [productId, setProductId] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [customerId] = useState(`ROCK-CUST-${Math.floor(Math.random() * 10000)}`);
+  const [orderId] = useState(`ROCK-ORD-${Math.floor(Math.random() * 10000)}`);
   const [custName, setCustName] = useState(''); // Customer Name
   const [phoneNumber, setPhoneNumber] = useState(''); // Customer Phone Number
   const [paymentStatus, setPaymentStatus] = useState('Paid'); // Payment Status
@@ -18,7 +20,7 @@ function OrderForm() {
   const [success, setSuccess] = useState('');
   
   const [addedProducts, setAddedProducts] = useState([]); // State for dynamically added products
-
+  const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
@@ -93,6 +95,7 @@ function OrderForm() {
       associateEmail, // Use associateEmail from input
       products: addedProducts, // Pass the added products
       customerId,
+      orderId,
       customerName: custName, // Customer Name
       customerPhoneNumber: phoneNumber, // Customer Phone Number
       paymentStatus, // Payment Status
@@ -105,7 +108,8 @@ function OrderForm() {
       setTimeout(() => {
         setSuccess('');
       }, 2000);
-      setAddedProducts([]); // Reset products after successful submission
+      setAddedProducts([]);  // Reset products after successful submission
+      navigate(`/order-summary/${response.data.order.orderId}`);
     } catch (err) {
       setError('Error creating order');
     }
