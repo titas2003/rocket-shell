@@ -9,6 +9,7 @@ function OrderForm() {
   const [productId, setProductId] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [customerId] = useState(`ROCK-CUST-${Math.floor(Math.random() * 10000)}`);
+  const [custName, setCustName] =useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('Paid');
   const [warrantyTill, setWarrantyTill] = useState('');
@@ -73,11 +74,12 @@ function OrderForm() {
         quantity,
       }],
       customerId,
+      customerName: custName,
       customerPhoneNumber: phoneNumber,
       paymentStatus,
       warrantyTill,
     };
-
+    console.log(orderData);
     try {
       const response = await axios.post(`${apiUrl}/orders/order`, orderData);  // Backend will calculate the totalBillablePrice
       setSuccess('Order created successfully');
@@ -163,7 +165,17 @@ function OrderForm() {
             required
           />
         </div>
-
+        <div className="mb-3">
+          <label htmlFor="custName" className="form-label">Customer Name</label>
+          <input
+            type="text"
+            id="custName"
+            className="form-control"
+            value={custName}
+            onChange={(e) => setCustName(e.target.value)}
+            required
+          />
+        </div>
         <div className="mb-3">
           <label htmlFor="phoneNumber" className="form-label">Customer Phone Number</label>
           <input
