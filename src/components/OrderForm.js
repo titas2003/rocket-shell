@@ -9,13 +9,15 @@ function OrderForm() {
   const [productId, setProductId] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [customerId] = useState(`ROCK-CUST-${Math.floor(Math.random() * 10000)}`);
-  const [custName, setCustName] =useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState('Paid');
+  const [custName, setCustName] = useState(''); // Customer Name
+  const [phoneNumber, setPhoneNumber] = useState(''); // Customer Phone Number
+  const [paymentStatus, setPaymentStatus] = useState('Paid'); // Payment Status
   const [warrantyTill, setWarrantyTill] = useState('');
   const [associateEmail, setAssociateEmail] = useState('');  // Associate Email State
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  const [addedProducts, setAddedProducts] = useState([]); // State for dynamically added products
 
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -24,8 +26,6 @@ function OrderForm() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${apiUrl}/products/categories`);
-        console.log(apiUrl);
-        console.log(response.data.name);
         setCategories(response.data);
       } catch (err) {
         console.error('Error fetching categories:', err);
@@ -57,6 +57,28 @@ function OrderForm() {
     setProductId(product._id);
   };
 
+  // Handle adding product to the list
+  const handleAddProduct = () => {
+    if (!selectedProduct || quantity < 1) {
+      setError('Please select a product and enter a valid quantity');
+      return;
+    }
+    const newProduct = {
+      productId,
+      productName: selectedProduct,
+      quantity,
+    };
+    setAddedProducts((prevProducts) => [...prevProducts, newProduct]);
+    setSelectedProduct('');
+    setQuantity(1);
+  };
+
+  // Handle removing a product from the list
+  const handleRemoveProduct = (index) => {
+    const updatedProducts = addedProducts.filter((_, i) => i !== index);
+    setAddedProducts(updatedProducts);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,24 +90,22 @@ function OrderForm() {
     }
 
     const orderData = {
-      associateEmail,  // Use associateEmail from input
-      products: [{
-        productId,  // Pass only the productId and quantity
-        quantity,
-      }],
+      associateEmail, // Use associateEmail from input
+      products: addedProducts, // Pass the added products
       customerId,
-      customerName: custName,
-      customerPhoneNumber: phoneNumber,
-      paymentStatus,
-      warrantyTill,
+      customerName: custName, // Customer Name
+      customerPhoneNumber: phoneNumber, // Customer Phone Number
+      paymentStatus, // Payment Status
+      warrantyTill, // Warranty Till Date
     };
-    console.log(orderData);
+
     try {
       const response = await axios.post(`${apiUrl}/orders/order`, orderData);  // Backend will calculate the totalBillablePrice
       setSuccess('Order created successfully');
       setTimeout(() => {
         setSuccess('');
       }, 2000);
+      setAddedProducts([]); // Reset products after successful submission
     } catch (err) {
       setError('Error creating order');
     }
@@ -128,7 +148,6 @@ function OrderForm() {
             className="form-select"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            required
           >
             <option value="">Select Category</option>
             {categories.map((category) => (
@@ -144,7 +163,6 @@ function OrderForm() {
             className="form-select"
             value={selectedProduct}
             onChange={(e) => handleProductSelect(products.find((product) => product.name === e.target.value))}
-            required
           >
             <option value="">Select Product</option>
             {products.map((product) => (
@@ -162,9 +180,25 @@ function OrderForm() {
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             min="1"
-            required
           />
         </div>
+
+        <button type="button" className="btn btn-secondary" onClick={handleAddProduct}>Add Product</button>
+
+        {/* Dynamically Added Products List */}
+        <div className="mt-3">
+          <h5>Added Products</h5>
+          <ul>
+            {addedProducts.map((product, index) => (
+              <li key={index}>
+                {product.productName} (Quantity: {product.quantity}) 
+                <button type="button" onClick={() => handleRemoveProduct(index)} className="btn btn-danger btn-sm ms-2">Remove</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Customer Name */}
         <div className="mb-3">
           <label htmlFor="custName" className="form-label">Customer Name</label>
           <input
@@ -176,6 +210,8 @@ function OrderForm() {
             required
           />
         </div>
+
+        {/* Customer Phone Number */}
         <div className="mb-3">
           <label htmlFor="phoneNumber" className="form-label">Customer Phone Number</label>
           <input
@@ -188,6 +224,7 @@ function OrderForm() {
           />
         </div>
 
+        {/* Payment Status */}
         <div className="mb-3">
           <label htmlFor="paymentStatus" className="form-label">Payment Status</label>
           <select
@@ -203,6 +240,7 @@ function OrderForm() {
           </select>
         </div>
 
+        {/* Warranty Till */}
         <div className="mb-3">
           <label htmlFor="warrantyTill" className="form-label">Warranty Till</label>
           <input
