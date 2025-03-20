@@ -12,6 +12,7 @@ function OrderForm() {
   const [customerId] = useState(`ROCK-CUST-${Math.floor(Math.random() * 10000)}`);
   const [orderId] = useState(`ROCK-ORD-${Math.floor(Math.random() * 10000)}`);
   const [custName, setCustName] = useState(''); // Customer Name
+  const [custEmail, setCustEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState(''); // Customer Phone Number
   const [paymentStatus, setPaymentStatus] = useState('Paid'); // Payment Status
   const [warrantyTill, setWarrantyTill] = useState('');
@@ -97,6 +98,7 @@ function OrderForm() {
       customerId,
       orderId,
       customerName: custName, // Customer Name
+      customerEmail: custEmail,
       customerPhoneNumber: phoneNumber, // Customer Phone Number
       paymentStatus, // Payment Status
       warrantyTill, // Warranty Till Date
@@ -214,7 +216,17 @@ function OrderForm() {
             required
           />
         </div>
-
+        <div className="mb-3">
+          <label htmlFor="associateEmail" className="form-label">Customer Email</label>
+          <input
+            type="email"
+            id="custEmail"
+            className="form-control"
+            value={custEmail}
+            onChange={(e) => setCustEmail(e.target.value)}
+            required
+          />
+        </div>
         {/* Customer Phone Number */}
         <div className="mb-3">
           <label htmlFor="phoneNumber" className="form-label">Customer Phone Number</label>

@@ -94,7 +94,6 @@ function ProductForm() {
             className="form-control"
             id="images"
             onChange={(e) => setImage(e.target.files[0])}
-            required
           />
         </div>
         <button type="submit" className="btn btn-primary">Add Product</button>
