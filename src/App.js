@@ -11,6 +11,7 @@ import HomePage from './components/HomePage'; // Import HomePage component
 import OrderForm from './components/OrderForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import OrderSummary from './components/OrderSummary';
+import AdminAllOrders from './components/AdminAllOrder';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -33,6 +34,7 @@ function App() {
           <Route path="/associate-login" element={<AssociateLogin />} />
           <Route path="/create-order" element={<OrderForm />} />
           <Route path="/order-summary/:orderId" element={ <OrderSummary /> } />
+          <Route path="/get-all-orders" element= {<AdminAllOrders />} />
         </Routes>
       </div>
     </Router>
